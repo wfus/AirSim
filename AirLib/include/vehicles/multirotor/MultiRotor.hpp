@@ -12,7 +12,16 @@
 #include "MultiRotorParams.hpp"
 #include <vector>
 #include "physics/PhysicsBody.hpp"
+#include "common/Settings.hpp"
 
+#ifndef DEFAULT_VOLTAGE
+#define DEFAULT_VOLTAGE (11.1f)
+#endif  // DEFAULT_VOLTAGE
+
+#ifndef DEFAULT_CAPACITY
+#define DEFAULT_CAPACITY (5.5f)
+#endif  // DEFAULT_CAPACITY
+ 
 
 namespace msr { namespace airlib {
 
@@ -33,8 +42,37 @@ public:
 
         //reset sensors last after their ground truth has been reset
         resetSensors();
+        // reset battery
+        if (battery_ != nullptr) {
+            battery_->reset();
+        }
     }
 
+    void setEnergyRotorSpecs(Settings& settings){ 
+
+        Settings energy_model_settings;
+        //if (!settings.getChild("EnergyModelSettings", energy_model_settings)) {
+        //UAirBlueprintLib::LogMessage(TEXT("Energy model settings not provided. Energy values must  be ignored"), "", LogDebugLevel::Failure);
+        //}
+        settings.getChild("EnergyModelSettings", energy_model_settings);
+
+        energy_rotor_specs_.set_mass(float(energy_model_settings.getFloat("mass", 0)));
+        energy_rotor_specs_.set_mass_coeff(float(energy_model_settings.getFloat("mass_coeff", 0)));
+        energy_rotor_specs_.set_vxy_coeff(float(energy_model_settings.getFloat("vxy_coeff", 0)));
+        energy_rotor_specs_.set_axy_coeff(float(energy_model_settings.getFloat("axy_coeff", 0)));
+        energy_rotor_specs_.set_vxy_axy_coeff(float(energy_model_settings.getFloat("vxy_axy_coeff", 0)));
+        energy_rotor_specs_.set_vz_coeff(float(energy_model_settings.getFloat("vz_coeff", 0)));
+        energy_rotor_specs_.set_az_coeff(float(energy_model_settings.getFloat("az_coeff", 0)));
+        energy_rotor_specs_.set_vz_az_coeff(float(energy_model_settings.getFloat("vz_az_coeff", 0)));
+        energy_rotor_specs_.set_one_coeff(float(energy_model_settings.getFloat("one_coeff", 0)));
+        energy_rotor_specs_.set_vxy_wxy_coeff(float(energy_model_settings.getFloat("vxy_wxy_coeff", 0)));
+
+    }
+
+    EnergyRotorSpecs getEnergyRotorSpecs(){
+        return energy_rotor_specs_;
+     }
+ 
     virtual void update() override
     {
         //update forces on vertices that we will use next
@@ -77,6 +115,37 @@ public:
             rotors_.at(rotor_index).setControlSignal(
                 vehicle_api_->getActuation(rotor_index));
         }
+    
+        if (battery_ != nullptr) {
+            TripStats trip_stats;
+            trip_stats.state_of_charge = battery_->StateOfCharge();
+            trip_stats.voltage = battery_->Voltage();
+            trip_stats.energy_consumed = getEnergyConsumed();
+            trip_stats.collision_count = getCollisionCount();
+            trip_stats.flight_time = getTotalTime();
+            trip_stats.distance_traveled = getDistanceTraveled();
+            vehicle_api_->setTripStats(trip_stats);
+        }
+
+        // static RandomVectorGaussianR gauss_dist = RandomVectorGaussianR(0, 1);
+
+        IMUStats IMU_stats;
+        const ImuBase* imu_ = static_cast<const ImuBase*>(this->getSensors().getByType(SensorBase::SensorType::Imu));
+        IMU_stats.orientation = imu_->getOutput().orientation;
+        IMU_stats.angular_velocity = imu_->getOutput().angular_velocity;
+        IMU_stats.linear_acceleration = imu_->getOutput().linear_acceleration;
+        //IMU_stats.time_stamp = imu_->getOutput().time_stamp;
+
+        vehicle_api_->setIMUStats(IMU_stats);
+
+        GPSStats GPS_stats;
+        const GpsBase* gps_ = static_cast<const GpsBase*>(this->getSensors().getByType(SensorBase::SensorType::Gps));
+        GPS_stats.latitude = gps_->getOutput().gnss.geo_point.latitude;
+        GPS_stats.longitude = gps_->getOutput().gnss.geo_point.longitude;
+        GPS_stats.altitude = gps_->getOutput().gnss.geo_point.altitude;
+        //GPS_stats.time_stamp = gps_->getOutput().time_stamp;
+
+        vehicle_api_->setGPSStats(GPS_stats);
     }
 
     //sensor getter
@@ -133,6 +202,13 @@ private: //methods
     {
         PhysicsBody::initialize(params_->getParams().mass, params_->getParams().inertia, kinematics, environment);
 
+        Settings& settings = Settings::singleton();
+        setEnergyRotorSpecs(settings);  //set energy coeffs
+        float v = float(settings.getFloat("BatteryVoltage", DEFAULT_VOLTAGE));
+        float c = float(settings.getFloat("BatteryCapacity", DEFAULT_CAPACITY));
+        battery_ = new powerlib::Battery(v, c);
+ 
+        
         createRotors(*params_, rotors_, environment);
         createDragVertices();
 
@@ -171,6 +247,8 @@ private: //methods
         params_->getSensors().reset();
     }
 
+    
+
     void createDragVertices()
     {
         const auto& params = params_->getParams();
@@ -207,7 +285,7 @@ private: //fields
     //let us be the owner of rotors object
     vector<Rotor> rotors_;
     vector<PhysicsBodyVertex> drag_vertices_;
-
+    EnergyRotorSpecs energy_rotor_specs_;
     std::unique_ptr<Environment> environment_;
     VehicleApiBase* vehicle_api_;
 };

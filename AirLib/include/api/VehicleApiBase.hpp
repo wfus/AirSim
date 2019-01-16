@@ -125,6 +125,31 @@ public:
         return lidar->getOutput();
     }
 
+    /************* battery info is propagated similar to collision info ********/
+    virtual TripStats getTripStats(){
+            return trip_stats_; 
+    }
+   
+    virtual void setTripStats(const TripStats& trip_stats){
+                trip_stats_ = trip_stats; 
+    }
+  
+    virtual IMUStats getIMUStats(){
+        return IMU_stats_;
+    }
+
+    virtual void setIMUStats(const IMUStats& IMU_stats) {
+        IMU_stats_ = IMU_stats; 
+    }
+
+	virtual GPSStats getGPSStats() {
+        return GPS_stats_;
+    }
+
+    virtual void setGPSStats(const GPSStats& GPS_stats) {
+        GPS_stats_ = GPS_stats; 
+    }
+
     virtual ~VehicleApiBase() = default;
 
     //exceptions
@@ -148,8 +173,12 @@ public:
             : VehicleControllerException(message) {
         }
     };
-};
 
+private:
+    TripStats trip_stats_;
+    IMUStats IMU_stats_;
+    GPSStats GPS_stats_;
+};
 
 }} //namespace
 #endif

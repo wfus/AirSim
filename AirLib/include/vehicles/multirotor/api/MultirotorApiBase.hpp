@@ -122,6 +122,18 @@ public: //these APIs uses above low level APIs
         token_.cancel();
     }
 
+    /************* battery info is propagated similar to collision info ********/
+    /*
+    virtual FlightStats getFlightStats();
+    virtual void setTripStats(const FlightStats& flight_stats);
+  
+    virtual IMUStats getIMUStats();
+    virtual void setIMUStats(const IMUStats& flight_stats);
+
+	virtual GPSStats getGPSStats();
+	virtual void setGPSStats(const GPSStats& flight_stats);
+    */
+
 protected: //utility methods
     typedef std::function<bool()> WaitFunction;
 
@@ -138,6 +150,7 @@ protected: //utility methods
     virtual bool safetyCheckVelocityZ(float vx, float vy, float z);
     virtual bool safetyCheckDestination(const Vector3r& dest_loc);
 
+    
     /************* wait helpers ************/
     // helper function can wait for anything (as defined by the given function) up to the max_wait duration (in seconds).
     // returns true if the wait function succeeded, or false if timeout occurred or the timeout is invalid.
@@ -164,7 +177,8 @@ protected: //utility methods
     {
         return token_;
     }
-
+   
+        
 public: //types
     class UnsafeMoveException : public VehicleMoveException {
     public:
@@ -315,6 +329,12 @@ private: //variables
     //TODO: make this configurable?
     float landing_vel_ = 0.2f; //velocity to use for landing
     float approx_zero_vel_ = 0.05f;
+
+    /* 
+    FlightStats flight_stats_;
+    IMUStats IMU_stats_;
+	GPSStats GPS_stats_;
+    */
 };
 
 }} //namespace
