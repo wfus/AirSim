@@ -65,9 +65,9 @@ protected:
         params.rotor_params.max_rpm = 8750; // RPM can be obtained by KV * Voltage (or from docs)
         // using rotor_param default, but if you want to change any of the rotor_params, call calculateMaxThrust() to recompute the max_thrust
         // given new thrust coefficients, motor max_rpm and propeller diameter.
-        params.rotor_params.calculateMaxThrust();
 
         params.rotor_params.propeller_diameter = 0.3302f; //in meters
+        params.rotor_params.calculateMaxThrust();
         //set up dimensions of core body box or abdomen (not including arms).
         params.body_box.x() = .252f; params.body_box.y() = .190f; params.body_box.z() = .131f;
         real_T rotor_z = .0569f;
@@ -87,7 +87,8 @@ protected:
         params.rotor_params.max_rpm = 13024 * .6; //RPM can be obtained by KV * Voltage
         
         params.rotor_params.propeller_diameter = 0.254f; //in meters
-
+        params.rotor_params.calculateMaxThrust();
+        
         //set up dimensions of core body box or abdomen (not including arms).
         params.body_box.x() = .2428875f; params.body_box.y() = .10795; params.body_box.z() = .066675;
         real_T rotor_z = 0.9525f / 100;
