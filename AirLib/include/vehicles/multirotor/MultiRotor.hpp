@@ -27,7 +27,7 @@ namespace msr { namespace airlib {
 
 class MultiRotor : public PhysicsBody {
 public:
-    MultiRotor(MultiRotorParams* params, VehicleApiBase* vehicle_api, 
+    MultiRotor(MultiRotorParams* params, MultirotorApiBase* vehicle_api, 
         Kinematics* kinematics, Environment* environment)
         : params_(params), vehicle_api_(vehicle_api)
     {
@@ -117,7 +117,7 @@ public:
         }
     
         if (battery_ != nullptr) {
-            TripStats trip_stats;
+            TripStats trip_stats; 
             trip_stats.state_of_charge = battery_->StateOfCharge();
             trip_stats.voltage = battery_->Voltage();
             trip_stats.energy_consumed = getEnergyConsumed();
@@ -126,9 +126,8 @@ public:
             trip_stats.distance_traveled = getDistanceTraveled();
             vehicle_api_->setTripStats(trip_stats);
         }
-
         // static RandomVectorGaussianR gauss_dist = RandomVectorGaussianR(0, 1);
-
+        /*
         IMUStats IMU_stats;
         const ImuBase* imu_ = static_cast<const ImuBase*>(this->getSensors().getByType(SensorBase::SensorType::Imu));
         IMU_stats.orientation = imu_->getOutput().orientation;
@@ -146,6 +145,7 @@ public:
         //GPS_stats.time_stamp = gps_->getOutput().time_stamp;
 
         vehicle_api_->setGPSStats(GPS_stats);
+        */ 
     }
 
     //sensor getter
@@ -247,8 +247,12 @@ private: //methods
         params_->getSensors().reset();
     }
 
-    
-
+    /* 
+    TripStats getTripStats(){
+        return trip_stats_;
+    }
+    */
+   
     void createDragVertices()
     {
         const auto& params = params_->getParams();
@@ -287,7 +291,8 @@ private: //fields
     vector<PhysicsBodyVertex> drag_vertices_;
     EnergyRotorSpecs energy_rotor_specs_;
     std::unique_ptr<Environment> environment_;
-    VehicleApiBase* vehicle_api_;
+    MultirotorApiBase* vehicle_api_;
+ //    TripStats trip_stats_;
 };
 
 }} //namespace
