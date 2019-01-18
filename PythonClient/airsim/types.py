@@ -336,6 +336,13 @@ class CarState(MsgpackMixin):
     kinematics_estimated = KinematicsState()
     timestamp = np.uint64(0)
 
+class TripStats(MsgpackMixin):
+    voltage = 0.0
+    energy_consume = 0.0
+    flight_time = 2.0 
+    distance_traveled = 0.0
+    collision_count = 0 
+
 class MultirotorState(MsgpackMixin):
     collision = CollisionInfo();
     kinematics_estimated = KinematicsState()
@@ -343,6 +350,8 @@ class MultirotorState(MsgpackMixin):
     timestamp = np.uint64(0)
     landed_state = LandedState.Landed
     rc_data = RCData()
+    trip_stats = TripStats()
+
 
 class ProjectionMatrix(MsgpackMixin):
     matrix = []
