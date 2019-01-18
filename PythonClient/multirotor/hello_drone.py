@@ -7,7 +7,7 @@ import tempfile
 import pprint
 
 # connect to the AirSim simulator
-client = airsim.MultirotorClient()
+client = airsim.MultirotorClient(ip="10.243.49.243")
 client.confirmConnection()
 client.enableApiControl(True)
 client.armDisarm(True)
@@ -17,6 +17,9 @@ s = pprint.pformat(state)
 print("state: %s" % s)
 
 airsim.wait_key('Press any key to takeoff')
+#res = client.getTripStats()
+#print res.flight_time
+
 client.takeoffAsync().join()
 
 state = client.getMultirotorState()
@@ -31,6 +34,7 @@ state = client.getMultirotorState()
 print("state: %s" % pprint.pformat(state))
 
 airsim.wait_key('Press any key to take images')
+
 # get camera images from the car
 responses = client.simGetImages([
     airsim.ImageRequest("0", airsim.ImageType.DepthVis),  #depth visualization image
