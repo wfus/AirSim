@@ -130,18 +130,6 @@ public: //these APIs uses above low level APIs
         token_.cancel();
     }
 
-    /************* battery info is propagated similar to collision info ********/
-    /*
-    virtual FlightStats getFlightStats();
-    virtual void setTripStats(const FlightStats& flight_stats);
-  
-    virtual IMUStats getIMUStats();
-    virtual void setIMUStats(const IMUStats& flight_stats);
-
-	virtual GPSStats getGPSStats();
-	virtual void setGPSStats(const GPSStats& flight_stats);
-    */
-
 protected: //utility methods
     typedef std::function<bool()> WaitFunction;
 
@@ -339,11 +327,6 @@ private: //variables
     float approx_zero_vel_ = 0.05f;
 
     TripStats trip_stats_; 
-    /* 
-    FlightStats flight_stats_;
-    IMUStats IMU_stats_;
-	GPSStats GPS_stats_;
-    */
 };
 
 }} //namespace

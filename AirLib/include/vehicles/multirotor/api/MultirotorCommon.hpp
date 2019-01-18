@@ -95,42 +95,6 @@ struct TripStats{
 
 };
 
-/*
-struct IMUStats{
-    Quaternionr orientation;
-    Vector3r angular_velocity;
-    Vector3r linear_acceleration;
-    uint64_t time_stamp;
-
-    IMUStats()
-    {}
-    
-    IMUStats(Quaternionr orientation_val, Vector3r angular_velocity_val, 
-            Vector3r linear_acceleration_val, uint64_t time_stamp_val): orientation(orientation_val),
-                                      angular_velocity(angular_velocity_val),
-                                      linear_acceleration(linear_acceleration_val),
-                                      time_stamp(time_stamp_val)
-    {}
-};
-
-struct GPSStats {
-	double latitude;
-	double longitude;
-	double altitude;
-	uint64_t time_stamp;
-
-	GPSStats()
-	{}
-
-	GPSStats(double latitude_val, double longitude_val,
-		double altitude_val, uint64_t time_stamp_val) : latitude(latitude_val),
-		longitude(longitude_val),
-		altitude(altitude_val),
-		time_stamp(time_stamp_val)
-	{}
-};
-*/
-
 struct MultirotorState {
     CollisionInfo collision;
     Kinematics::State kinematics_estimated;
