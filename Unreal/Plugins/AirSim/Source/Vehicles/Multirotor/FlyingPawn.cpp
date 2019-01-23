@@ -3,6 +3,90 @@
 #include "AirBlueprintLib.h"
 #include "common/CommonStructs.hpp"
 #include "common/Common.hpp"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine.h"
+
+static bool file_exists(const char * name) {
+	FILE * file = fopen(name, "r");
+	if (file) {
+		fclose(file);
+		return true;
+	}
+	return false;
+}
+
+// Hasan's additions
+static std::string file_contents(const char * name) {
+	std::string contents;
+
+	FILE * file = fopen(name, "r");
+	if (file) {
+		std::fseek(file, 0, SEEK_END);
+		contents.resize(std::ftell(file));
+		std::rewind(file);
+		std::fread(&contents[0], 1, contents.size(), file);
+
+		fclose(file);
+	}
+
+	return contents;
+}
+
+static bool time_to_restart() {
+	const std::string filename = "restart";
+	static std::string app_data_path = common_utils::FileSystem::getAppDataFolder();
+	static std::string path = common_utils::FileSystem::combine(app_data_path, filename);
+
+	if (file_exists(path.c_str())) {
+		remove(path.c_str());
+		return true;
+	}
+	return false;
+}
+
+static bool time_to_exit() {
+	const std::string filename = "exit";
+	static std::string app_data_path = common_utils::FileSystem::getAppDataFolder();
+	static std::string path = common_utils::FileSystem::combine(app_data_path, filename);
+
+	if (file_exists(path.c_str())) {
+		remove(path.c_str());
+		return true;
+	}
+	return false;
+}
+
+static std::string change_level_to() {
+	const std::string filename = "change_level";
+	static std::string app_data_path = common_utils::FileSystem::getAppDataFolder();
+	static std::string path = common_utils::FileSystem::combine(app_data_path, filename);
+
+	std::string new_level = file_contents(path.c_str());
+
+	if (!new_level.empty()) {
+		remove(path.c_str());
+	}
+	return new_level;
+}
+
+static void ExecScriptingCommands(AFlyingPawn* flyingPawn) {
+	UWorld * world = flyingPawn->GetWorld();
+
+	std::string new_level = change_level_to();
+	if (!new_level.empty()) {
+		UGameplayStatics::OpenLevel(flyingPawn, new_level.c_str(), false);
+	}
+
+	if (time_to_restart()) {
+		UGameplayStatics::OpenLevel(flyingPawn, FName(*world->GetName()), false);
+	}
+
+	if (time_to_exit()) {
+		APlayerController* PController = UGameplayStatics::GetPlayerController(world, 0);
+		PController->ConsoleCommand(TEXT("exit"));
+	}
+}
 
 AFlyingPawn::AFlyingPawn()
 {
@@ -36,6 +120,7 @@ void AFlyingPawn::initializeForBeginPlay()
 void AFlyingPawn::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+	ExecScriptingCommands(this);
     pawn_events_.getPawnTickSignal().emit(DeltaSeconds);
 }
 
