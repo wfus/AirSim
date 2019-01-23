@@ -30,7 +30,6 @@ STRICT_MODE_OFF
 #include "common/common_utils/WindowsApisCommonPost.hpp"
 
 #include "api/RpcLibAdapatorsBase.hpp"
-#include "Kismet/GameplayStatics.h"
 
 STRICT_MODE_ON
 
@@ -57,7 +56,8 @@ typedef msr::airlib_rpclib::RpcLibAdapatorsBase RpcLibAdapatorsBase;
 RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port)
     : api_provider_(api_provider)
 {
-    if (server_address == "")
+		unreal_reset_ = false;
+	if (server_address == "")
         pimpl_.reset(new impl(port));
     else
         pimpl_.reset(new impl(server_address, port));
@@ -93,7 +93,7 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     });
 
     pimpl_->server.bind("enableApiControl", [&](bool is_enabled, const std::string& vehicle_name) -> void { 
-        getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
+		getVehicleApi(vehicle_name)->enableApiControl(is_enabled);
     });
     pimpl_->server.bind("isApiControlEnabled", [&](const std::string& vehicle_name) -> bool { 
         return getVehicleApi(vehicle_name)->isApiControlEnabled();
@@ -137,11 +137,13 @@ RpcLibServerBase::RpcLibServerBase(ApiProvider* api_provider, const std::string&
     pimpl_->server.bind("reset", [&]() -> void {
         auto* sim_world_api = getWorldSimApi();
         if (sim_world_api)
-		    UGameplayStatics::OpenLevel(flyingPawn, FName(*world->GetName()), false);
             sim_world_api->reset();
         else
             getVehicleApi("")->reset();
-		    UGameplayStatics::OpenLevel(flyingPawn, FName(*world->GetName()), false);
+    });
+    
+    pimpl_->server.bind("resetUnreal", [&]() -> void {
+		setUnrealReset();
     });
 
     pimpl_->server.bind("simPrintLogMessage", [&](const std::string& message, const std::string& message_param, unsigned char severity) -> void {
@@ -285,6 +287,16 @@ void* RpcLibServerBase::getServer() const
 {
     return &pimpl_->server;
 }
+
+bool RpcLibServerBase::checkUnrealReset()
+{
+	return unreal_reset_;
+}
+
+void RpcLibServerBase::setUnrealReset() {
+	unreal_reset_ = true;
+}
+
 
 }} //namespace
 #endif

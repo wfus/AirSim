@@ -14,12 +14,14 @@ namespace msr { namespace airlib {
 
 class RpcLibServerBase : public ApiServerBase {
 public:
-    RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = 41451);
+	RpcLibServerBase(ApiProvider* api_provider, const std::string& server_address, uint16_t port = 41451);
     virtual ~RpcLibServerBase() override;
 
     virtual void start(bool block, std::size_t thread_count) override;
     virtual void stop() override;
-
+	virtual bool checkUnrealReset() override;
+    virtual void setUnrealReset() override;
+    
     class ApiNotSupported : public std::runtime_error {
     public:
         ApiNotSupported(const std::string& message)
@@ -58,11 +60,12 @@ protected:
             throw ApiNotSupported("World-Sim API "
                 "' is not available. This could be because this is not a simulation");
     }
+	
 
 
 private:
     ApiProvider* api_provider_;
-
+	bool unreal_reset_;
     struct impl;
     std::unique_ptr<impl> pimpl_;
 };
