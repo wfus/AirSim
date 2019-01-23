@@ -56,9 +56,10 @@ MultirotorRpcLibServer::MultirotorRpcLibServer(ApiProvider* api_provider, string
     
     (static_cast<rpc::server*>(getServer()))->
         bind("getTripStats", [&](const std::string& vehicle_name) -> MultirotorRpcLibAdapators::TripStats { return getVehicleApi(vehicle_name)->getTripStats(); });
-   
+   /*
     (static_cast<rpc::server*>(getServer()))->
         bind("getIMUStats", [&](const std::string& vehicle_name) -> MultirotorRpcLibAdapators::IMUStats { return getVehicleApi(vehicle_name)->getIMUStats(); });
+   */
     
     (static_cast<rpc::server*>(getServer()))->
         bind("moveByAngleZ", [&](float pitch, float roll, float z, float yaw, float duration, const std::string& vehicle_name) ->

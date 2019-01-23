@@ -39,6 +39,48 @@ public:
         }
     };
 
+    struct TripStats {
+    
+        float state_of_charge = -1.0f;
+        float voltage = -1.0f;
+        float energy_consumed = -1.0f;
+        float flight_time = -1.0;
+        float distance_traveled = -1.0f;
+        int collision_count = 0;
+
+        MSGPACK_DEFINE_MAP(state_of_charge,
+                voltage,
+                energy_consumed,
+                flight_time,
+                distance_traveled,
+                collision_count);
+
+        TripStats()
+        {}
+        
+        TripStats(const msr::airlib::TripStats& s)
+        {
+            state_of_charge = s.state_of_charge;
+            voltage = s.voltage;
+            energy_consumed = s.energy_consumed;
+            flight_time = s.flight_time;
+            distance_traveled = s.distance_traveled;
+            collision_count = s.collision_count;
+        }
+        
+        msr::airlib::TripStats to() const
+        {
+            return msr::airlib::TripStats(state_of_charge,
+                    voltage,
+                    energy_consumed,
+                    flight_time,
+                    distance_traveled,
+                    collision_count);
+       }
+    };
+    
+
+
     struct MultirotorState {
         CollisionInfo collision;
         KinematicsState kinematics_estimated;
@@ -48,9 +90,9 @@ public:
         LandedState landed_state;
         RCData rc_data;
         std::vector<std::string> controller_messages;
+        TripStats trip_stats;
 
-
-        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, gps_location, timestamp, landed_state, rc_data);
+        MSGPACK_DEFINE_MAP(collision, kinematics_estimated, gps_location, timestamp, landed_state, rc_data, trip_stats);
 
         MultirotorState()
         {}
@@ -63,14 +105,16 @@ public:
             timestamp = s.timestamp;
             landed_state = s.landed_state;
             rc_data = RCData(s.rc_data);
+            trip_stats = s.trip_stats; 
         }
 
         msr::airlib::MultirotorState to() const
         {
             return msr::airlib::MultirotorState(collision.to(), kinematics_estimated.to(), 
-                gps_location.to(), timestamp, landed_state, rc_data.to());
+                gps_location.to(), timestamp, landed_state, rc_data.to(), trip_stats.to());
         }
     };
+
 };
 
 }} //namespace

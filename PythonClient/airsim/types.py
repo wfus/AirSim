@@ -350,6 +350,8 @@ class MultirotorState(MsgpackMixin):
     timestamp = np.uint64(0)
     landed_state = LandedState.Landed
     rc_data = RCData()
+    trip_stats = TripStats()
+
 
 
 class ProjectionMatrix(MsgpackMixin):

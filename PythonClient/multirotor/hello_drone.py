@@ -17,8 +17,6 @@ s = pprint.pformat(state)
 print("state: %s" % s)
 
 airsim.wait_key('Press any key to takeoff')
-res = client.getTripStats()
-print res.flight_time
 client.takeoffAsync().join()
 
 state = client.getMultirotorState()

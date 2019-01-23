@@ -35,7 +35,6 @@ protected: //must be implemented
     virtual LandedState getLandedState() const = 0;
     virtual GeoPoint getGpsLocation() const = 0;
     virtual const MultirotorApiParams& getMultirotorApiParams() const = 0;
-
     /************************* basic config APIs *********************************/
     virtual float getCommandPeriod() const = 0; //time between two command required for drone in seconds
     virtual float getTakeoffZ() const = 0;  // the height above ground for the drone after successful takeoff (Z above ground is negative due to NED coordinate system).
@@ -62,6 +61,15 @@ protected: //optional overrides but recommended, default values may work
 public: //optional overrides
     virtual void moveByRC(const RCData& rc_data);
 
+    virtual void setTripStats(const TripStats& trip_stats) {
+        trip_stats_ = trip_stats;     
+        //TripStats;
+    }
+    
+    virtual const TripStats getTripStats() const{
+        return trip_stats_; 
+    }
+    
     //below method exist for any firmwares that may want to use ground truth for debugging purposes
     virtual void setSimulatedGroundTruth(const Kinematics::State* kinematics, const Environment* environment)
     {
@@ -112,7 +120,7 @@ public: //these APIs uses above low level APIs
         state.timestamp = clock()->nowNanos();
         state.landed_state = getLandedState();
         state.rc_data = getRCData();
-
+        state.trip_stats = getTripStats();
         return state;
     }
 
@@ -121,18 +129,6 @@ public: //these APIs uses above low level APIs
     {
         token_.cancel();
     }
-
-    /************* battery info is propagated similar to collision info ********/
-    /*
-    virtual FlightStats getFlightStats();
-    virtual void setTripStats(const FlightStats& flight_stats);
-  
-    virtual IMUStats getIMUStats();
-    virtual void setIMUStats(const IMUStats& flight_stats);
-
-	virtual GPSStats getGPSStats();
-	virtual void setGPSStats(const GPSStats& flight_stats);
-    */
 
 protected: //utility methods
     typedef std::function<bool()> WaitFunction;
@@ -330,11 +326,7 @@ private: //variables
     float landing_vel_ = 0.2f; //velocity to use for landing
     float approx_zero_vel_ = 0.05f;
 
-    /* 
-    FlightStats flight_stats_;
-    IMUStats IMU_stats_;
-	GPSStats GPS_stats_;
-    */
+    TripStats trip_stats_; 
 };
 
 }} //namespace
