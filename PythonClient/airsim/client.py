@@ -19,6 +19,17 @@ class VehicleClient:
     # -----------------------------------  Common vehicle APIs ---------------------------------------------
     def reset(self):
         self.client.call('reset')
+    
+    def resetUnreal(self, sleepTime =.52):
+        self.client.call('resetUnreal')
+        time.sleep(sleepTime) #this is necessary because resetUnreal is done
+                              #through setting a local variable through RPC
+                              #and later reacting to it in SimMode
+                              #which means other rpc calls might take effect
+                              #before reset. Hence to ensure the order, we need 
+                              # an extra sleep. With Behzad machines
+                              # it seems like 30 ms is enough sleep time
+                              # althought sometimes it needs 300 ms!!!!
 
     def ping(self):
         return self.client.call('ping')
