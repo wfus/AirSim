@@ -433,7 +433,8 @@ bool ASimModeBase::isApiServerStarted()
 
 void ASimModeBase::checkUnrealReset() {
 	if (api_server_->checkUnrealReset()) {
-		UGameplayStatics::OpenLevel(this, FName(*(this->GetWorld()->GetName()), false));
+        api_server_->unSetUnrealReset();	
+        UGameplayStatics::OpenLevel(this, FName(*(this->GetWorld()->GetName()), false));
 	}
 }
 

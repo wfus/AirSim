@@ -21,6 +21,8 @@ public:
     virtual void stop() override;
 	virtual bool checkUnrealReset() override;
     virtual void setUnrealReset() override;
+	virtual void unSetUnrealReset() override;
+
     
     class ApiNotSupported : public std::runtime_error {
     public:

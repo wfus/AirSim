@@ -9,6 +9,8 @@ import msgpack
 import time
 import math
 import logging
+import airsim
+
 
 class VehicleClient:
     def __init__(self, ip = "", port = 41451, timeout_value = 3600):
@@ -20,9 +22,11 @@ class VehicleClient:
     def reset(self):
         self.client.call('reset')
     
-    def resetUnreal(self, sleepTime =.52):
+    def resetUnreal(self, sleep_time_before =.1, sleep_time_after=.1):
+        time.sleep(sleep_time_before)  #not sure why we need this, but sometimes
+                                       #we do
         self.client.call('resetUnreal')
-        time.sleep(sleepTime) #this is necessary because resetUnreal is done
+        time.sleep(sleep_time_after) #this is necessary because resetUnreal is done
                               #through setting a local variable through RPC
                               #and later reacting to it in SimMode
                               #which means other rpc calls might take effect
@@ -31,6 +35,10 @@ class VehicleClient:
                               # it seems like 30 ms is enough sleep time
                               # althought sometimes it needs 300 ms!!!!
 
+        client = airsim.MultirotorClient(ip="127.0.0.1")
+        client.enableApiControl(True)
+        return client
+    
     def ping(self):
         return self.client.call('ping')
 

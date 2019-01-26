@@ -293,6 +293,11 @@ bool RpcLibServerBase::checkUnrealReset()
 	return unreal_reset_;
 }
 
+void RpcLibServerBase::unSetUnrealReset()
+{
+	unreal_reset_ = false;
+}
+
 void RpcLibServerBase::setUnrealReset() {
 	unreal_reset_ = true;
 }
