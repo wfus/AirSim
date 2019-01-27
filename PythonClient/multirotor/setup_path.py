@@ -46,6 +46,7 @@ class SetupPath:
             client_path = os.path.join(airsim_path, 'client.py')
             if os.path.exists(client_path):
                 sys.path.insert(0, parent)
+                sys.path.insert(0, parent + "\data_collection")
         else:
             logging.warning("airsim module not found in parent folder. Using installed package (pip install airsim).")
 

@@ -3,7 +3,7 @@ import os
 from game_config_class import *
 
 class GameConfigManipulator:
-    def __init__(self, input_file_addr=host_config.json_file_addr):
+    def __init__(self, input_file_addr=setup.json_file_addr):
         assert(os.path.isfile(input_file_addr)), input_file_addr + " doesnt exist"
         self.input_file_addr = input_file_addr 
         self.game_config = GameConfig(input_file_addr)
