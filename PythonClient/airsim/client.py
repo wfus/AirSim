@@ -19,6 +19,36 @@ class VehicleClient:
         self.client = msgpackrpc.Client(msgpackrpc.Address(ip, port), timeout = timeout_value, pack_encoding = 'utf-8', unpack_encoding = 'utf-8')
         
     # -----------------------------------  Common vehicle APIs ---------------------------------------------
+
+    @staticmethod
+    def toEulerianAngle(q):
+        z = q.z_val
+        y = q.y_val
+        x = q.x_val
+        w = q.w_val
+        ysqr = y * y
+
+        # roll (x-axis rotation)
+        t0 = +2.0 * (w * x + y * z)
+        t1 = +1.0 - 2.0 * (x * x + ysqr)
+        roll = math.atan2(t0, t1)
+
+        # pitch (y-axis rotation)
+        t2 = +2.0 * (w * y - z * x)
+        if (t2 > 1.0):
+            t2 = 1
+        if (t2 < -1.0):
+            t2 = -1.0
+        pitch = math.asin(t2)
+
+        # yaw (z-axis rotation)
+        t3 = +2.0 * (w * z + x * y)
+        t4 = +1.0 - 2.0 * (ysqr + z * z)
+        yaw = math.atan2(t3, t4)
+
+        return (pitch, roll, yaw)
+
+
     def reset(self):
         self.client.call('reset')
     
