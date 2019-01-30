@@ -8,3 +8,4 @@ dir_path = os.path.dirname(file_path)
 copy2(dir_path+"\\client.py", airsim_dir)
 copy2(dir_path+"\\types.py", airsim_dir)
 
+
