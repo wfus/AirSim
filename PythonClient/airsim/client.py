@@ -204,35 +204,37 @@ class VehicleClient:
 
     # legacy handling
     # TODO: remove below legacy wrappers in future major releases
-    upgrade_api_help = "\nPlease see https://github.com/Microsoft/AirSim/blob/master/docs/upgrade_apis.md for more info."
+    upgrade_api_help = ""
     def simGetPose(self):
-        logging.warning("simGetPose API is renamed to simGetVehiclePose. Please update your code." + self.upgrade_api_help)
+        #logging.warning("simGetPose API is renamed to simGetVehiclePose. Please update your code." + self.upgrade_api_help)
         return self.simGetVehiclePose()
     def simSetPose(self, pose, ignore_collison):
-        logging.warning("simSetPose API is renamed to simSetVehiclePose. Please update your code." + self.upgrade_api_help)
+        #logging.warning("simSetPose API is renamed to simSetVehiclePose. Please update your code." + self.upgrade_api_help)
         return self.simSetVehiclePose(pose, ignore_collison)
     def getCollisionInfo(self):
-        logging.warning("getCollisionInfo API is renamed to simGetCollisionInfo. Please update your code." + self.upgrade_api_help)
+        #logging.warning("getCollisionInfo API is renamed to simGetCollisionInfo. Please update your code." + self.upgrade_api_help)
         return self.simGetCollisionInfo()
     def getCameraInfo(self, camera_id):
-        logging.warning("getCameraInfo API is renamed to simGetCameraInfo. Please update your code." + self.upgrade_api_help)
+        #logging.warning("getCameraInfo API is renamed to simGetCameraInfo. Please update your code." + self.upgrade_api_help)
         return self.simGetCameraInfo(camera_id)
     def setCameraOrientation(self, camera_id, orientation):
-        logging.warning("setCameraOrientation API is renamed to simSetCameraOrientation. Please update your code." + self.upgrade_api_help)
+        #logging.warning("setCameraOrientation API is renamed to simSetCameraOrientation. Please update your code." + self.upgrade_api_help)
         return self.simSetCameraOrientation(camera_id, orientation)
     def getPosition(self):
-        logging.warning("getPosition API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
+        #logging.warning("getPosition API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
         return self.simGetGroundTruthKinematics().position
     def getVelocity(self):
-        logging.warning("getVelocity API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
+        #logging.warning("getVelocity API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
         return self.simGetGroundTruthKinematics().linear_velocity
     def getOrientation(self):
-        logging.warning("getOrientation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
+        #logging.warning("getOrientation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
         return self.simGetGroundTruthKinematics().orientation
+    def getPitchRollYaw(self):
+        return self.toEulerianAngle(self.getOrientation())
     def getLandedState(self):
         raise Exception("getLandedState API is deprecated. Please use getMultirotorState() API")
     def getGpsLocation(self):
-        logging.warning("getGpsLocation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
+        #logging.warning("getGpsLocation API is deprecated. For ground-truth please use simGetGroundTruthKinematics() API." + self.upgrade_api_help)
         return self.simGetGroundTruthEnvironment().geo_point
     def takeoff(self, max_wait_seconds = 15):
         raise Exception("takeoff API is deprecated. Please use takeoffAsync() API." + self.upgrade_api_help)
