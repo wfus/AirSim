@@ -338,7 +338,7 @@ class CarState(MsgpackMixin):
 
 class TripStats(MsgpackMixin):
     voltage = 0.0
-    energy_consume = 0.0
+    energy_consumed = 0.0
     flight_time = 2.0 
     distance_traveled = 0.0
     collision_count = 0 
